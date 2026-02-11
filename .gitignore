@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# Env vars
+.env
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# DB
+*.sqlite3
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uvicorn / Gunicorn
+uvicorn.log
+gunicorn.log
+
+# Arquivos PDF
+*.pdf
+
+# Checkpoints de notebooks e notebooks
+.ipynb_checkpoints/
+*.ipynb
