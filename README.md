@@ -80,7 +80,5 @@ API_TOKEN=seu_token_super_secreto
 │schemas.py
 ```
 
-```md
 ![Python](https://img.shields.io/badge/python-3.13.1-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.128.7-green)
-```
