@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from leitura_pdf import leituraCTC
 from fastapi.openapi.docs import get_swagger_ui_html
 
-app = FastAPI(docs_url=None, title="CTC Reader", description="API responsável por processar os dados da CTC", version="v1")
+app = FastAPI(docs_url=None, title="CTC Reader", description="API responsável por processar os dados da CTC - Certidão de Tempo de Contribuição do INSS", version="v1")
 
 app.include_router(leituraCTC)
 

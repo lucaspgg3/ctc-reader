@@ -29,6 +29,8 @@ class DiscriminacaoSalario(BaseModel):
     empregador: str
     cnpj: str
     salarios: List[Salario]
+    competencias_faltantes: List[str] = []
+    falta_competencia: bool = False
 
 class ResponseLeituraCTC(BaseModel):
     nome_requerente: str

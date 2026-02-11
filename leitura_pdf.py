@@ -1,19 +1,25 @@
+import io
 import re
 import pdfplumber
 from copy import deepcopy
-from fastapi import APIRouter, Depends
+from datetime import datetime
 from schemas import ResponseLeituraCTC
 from dependencies import verificar_token
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 
 leituraCTC = APIRouter(prefix="/ctc-reader/api", tags=["CTC Reader"], dependencies=[Depends(verificar_token)])
 
-@leituraCTC.get("/leCTC", response_model=ResponseLeituraCTC)
-def fazer_leitura():
-    def extract_text(pdf_path: str) -> str:
-        with pdfplumber.open(pdf_path) as pdf:
+# @leituraCTC.post("/leCTC")
+@leituraCTC.post("/leCTC", response_model=ResponseLeituraCTC)
+async def fazer_leitura(file: UploadFile = File(...)):
+
+    def extract_text_from_bytes(file_bytes: bytes) -> str:
+        if file.content_type != "application/pdf":
+            raise HTTPException(status_code=400, detail="Arquivo deve ser um PDF válido")
+        with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
             pages_text = [page.extract_text() or "" for page in pdf.pages]
-        raw_text = "\n".join(pages_text)
-        return raw_text
+        text = "\n".join(pages_text)
+        return text
 
     def extract_header_fields(text: str) -> dict:
         fields = {}
@@ -163,9 +169,46 @@ def fazer_leitura():
         resultado["discriminacao_salarios_contribuicao"] = list(agrupados.values())
         return resultado
     
-    arquivo = "ctc-1.pdf"
+    def adicionar_verificacao_competencias(dados: dict) -> dict:
+        resultado = deepcopy(dados)
 
-    text = extract_text(arquivo)
+        for empregador in resultado.get("discriminacao_salarios_contribuicao", []):
+            salarios = empregador.get("salarios", [])
+
+            if not salarios:
+                empregador["competencias_faltantes"] = []
+                empregador["falta_competencia"] = False
+                continue
+
+            datas_existentes = [
+                datetime.strptime(s["competencia"], "%m/%Y")
+                for s in salarios
+            ]
+
+            data_inicio = min(datas_existentes)
+            data_fim = max(datas_existentes)
+            competencias_esperadas = []
+            data_atual = data_inicio
+
+            while data_atual <= data_fim:
+                competencias_esperadas.append(data_atual.strftime("%m/%Y"))
+                if data_atual.month == 12:
+                    data_atual = data_atual.replace(year=data_atual.year + 1, month=1)
+                else:
+                    data_atual = data_atual.replace(month=data_atual.month + 1)
+            competencias_existentes = {s["competencia"] for s in salarios}
+            faltantes = [
+                comp for comp in competencias_esperadas
+                if comp not in competencias_existentes
+            ]
+            empregador["competencias_faltantes"] = faltantes
+            empregador["falta_competencia"] = len(faltantes) > 0
+
+        return resultado
+
+    file_bytes = await file.read()
+
+    text = extract_text_from_bytes(file_bytes)
 
     resultado = {
         **extract_header_fields(text),
@@ -174,5 +217,6 @@ def fazer_leitura():
     }
 
     resultado_formatado = consolidar_salarios_por_empregador(resultado)
+    resultado_final = adicionar_verificacao_competencias(resultado_formatado)
 
-    return resultado_formatado
+    return resultado_final
