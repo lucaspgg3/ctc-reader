@@ -1,0 +1,31 @@
+<div class="container">
+  <h1>CTC Reader</h1>
+  <p class="subtitle">
+    Selecione o PDF da Certidão de Tempo de Contribuição para processar
+  </p>
+
+  <div class="upload-box">
+    <input type="file" accept="application/pdf" (change)="onArquivoSelecionado($event)" />
+
+    <button type="button" (click)="enviar()" [disabled]="!arquivoSelecionado || carregando">
+      {{ carregando ? 'Processando...' : 'Ler arquivo' }}
+    </button>
+  </div>
+
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <section *ngIf="resultado" class="resultado">
+    <h2>Resultado</h2>
+
+    <ul class="cabecalho">
+      <li><strong>Requerente:</strong> {{ resultado.nome_requerente }}</li>
+      <li><strong>Órgão instituidor:</strong> {{ resultado.orgao_instituidor }}</li>
+      <li><strong>Protocolo:</strong> {{ resultado.protocolo }}</li>
+    </ul>
+
+    <details open>
+      <summary>JSON completo</summary>
+      <pre>{{ resultado | json }}</pre>
+    </details>
+  </section>
+</div>

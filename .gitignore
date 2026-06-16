@@ -1,3 +1,8 @@
+# ──────────────────────────────────────────────
+# .gitignore único para o monorepo (backend + frontend)
+# Regras sem barra inicial casam em qualquer nível.
+# ──────────────────────────────────────────────
+
 # Python
 __pycache__/
 *.py[cod]
@@ -11,7 +16,7 @@ env/
 # Env vars
 .env
 
-# Build
+# Build / distribuição
 build/
 dist/
 *.egg-info/
@@ -23,10 +28,26 @@ htmlcov/
 
 # Logs
 *.log
+npm-debug.log
+yarn-error.log
 
 # DB
 *.sqlite3
 *.db
+
+# Node / Angular
+node_modules/
+.angular/
+.sass-cache/
+/coverage
+testem.log
+
+# Checkpoints e notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Arquivos PDF
+*.pdf
 
 # IDE
 .vscode/
@@ -35,14 +56,3 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
-
-# Uvicorn / Gunicorn
-uvicorn.log
-gunicorn.log
-
-# Arquivos PDF
-*.pdf
-
-# Checkpoints de notebooks e notebooks
-.ipynb_checkpoints/
-*.ipynb

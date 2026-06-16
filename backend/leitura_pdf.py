@@ -7,7 +7,8 @@ from schemas import ResponseLeituraCTC
 from dependencies import verificar_token
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 
-leituraCTC = APIRouter(prefix="/ctc-reader/api", tags=["CTC Reader"], dependencies=[Depends(verificar_token)])
+# TODO: reativar a autenticação por token adicionando de volta: dependencies=[Depends(verificar_token)]
+leituraCTC = APIRouter(prefix="/ctc-reader/api", tags=["CTC Reader"])
 
 # @leituraCTC.post("/leCTC")
 @leituraCTC.post("/leCTC", response_model=ResponseLeituraCTC)
